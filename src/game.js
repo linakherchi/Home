@@ -80,9 +80,11 @@ class Game {
     }
     
     rotate(elapsed) {
+        let that = this
         let rotation;
         let now = d3.now()
-        let diff = now - this.lastTime
+        debugger
+        let diff = now - that.lastTime
         if (diff < elapsed) {
 
         rotation = this.projection.rotate()
@@ -93,6 +95,11 @@ class Game {
     }
         this.render()
         this.lastTime = now
+        if (that.centroid && that.centroid[0] === 435) {
+                    that.stopRotation()
+                    that.fill(that.polygon, that.colorCountry)
+                    that.showQuestion()
+                }
     }
 
     setAngles() {
@@ -104,9 +111,12 @@ class Game {
     }
 
 
-    
+    closeQuestion(){
+        const question = document.getElementsByClassName('question-shown')[0];
+        question.className = 'question-hidden';
+    }
+
     showQuestion(){
-        
         const question = document.getElementsByClassName('question-hidden')[0];
         question.className = 'question-shown';
     };
@@ -127,56 +137,79 @@ class Game {
     }
 
     checkAnswer(answer){
+        let score = 0 
+        let that = this
         if (answer === this.countrySelected.name){
-            console.log('You got it')
-            this.form.reset()
-            // this.timer.restart()
-            // let that = this
-            // this.timer = d3.timer(function (elapsed) {
-            //     that.rotate(elapsed)
-            //     if (that.centroid && that.centroid[0] === 435) {
-            //         that.timer.stop()
-            //         that.fill(that.polygon, that.colorCountry)
-            //         that.showQuestion()
-            //     }
-            // })
-            return true
+            score ++ 
+            // that.form.reset()
+            debugger
+            this.closeQuestion()
+            that.countryIds = that.countryIds.filter(function(el){return el !== that.countrySelected.id})
+            that.countryList = that.countryList.filter(function (el) { return el !== that.countrySelected })
+            // console.log(that.countryList)
+            // console.log(that.countryIds)
+            that.randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)]
+            that.polygon = that.countriescoord.features.find(function (el) { return el.id === that.randomId }) 
+            that.countrySelected = Object.values(that.countryList).find(function (el) { return el.id === that.randomId })
+            console.log(that.countrySelected.name)
+            this.startRotation()
         }
     }
 
     start(difficulty){
         let that = this;
-        let score = 0;
-        let counter;
+       
+       let countryListLength
+        
         let level = d3.tsv(Levels[difficulty].tsv, function(data1){
             that.countryList = data1
-            counter = that.countryList.length;
+            
             if (that.countryList){
-                const countryIds = [];
-                Object.values(that.countryList).forEach(country => countryIds.push(country.id))
-                countryIds.pop()
-                var randomId = countryIds[Math.floor(Math.random() * countryIds.length)];
+                countryListLength = that.countryList.length
+                that.countryIds = [];
+                Object.values(that.countryList).forEach(country => that.countryIds.push(country.id))
+                that.countryIds.pop()
+                var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
                 that.polygon = that.countriescoord.features.find(function (el) { return el.id === randomId }) 
+                // debugger
                 that.countrySelected = Object.values(that.countryList).find(function (el){return el.id === randomId})
-           
+                // console.log(countryList)
                 console.log(that.countrySelected.name)
             }
         })
-        
         this.drawEarth()
+        this.play()
         
         
-            this.timer = d3.timer(function(elapsed){ 
-                that.rotate(elapsed)
-                    if (that.centroid && that.centroid[0] === 435)
-                        {that.timer.stop()
-                        that.fill(that.polygon, that.colorCountry)
-                        that.showQuestion()}
-            })
-        
-        //  if (that.checkAnswer(that.answer) === true){
-        //                 score++ 
-        //             }
+            
+    }
+
+    play(){
+        let score = 0;
+        let that = this;  
+        // debugger
+        this.timer = d3.timer(function(elapsed){that.rotate(elapsed)}) 
+        // this.timer = d3.timer(function (elapsed) {
+        //     while (score === 0){
+        //         that.rotate(elapsed)
+        //         if (that.centroid && that.centroid[0] === 435) {
+        //             that.timer.stop()
+        //             that.fill(that.polygon, that.colorCountry)
+        //             that.showQuestion()
+        //         }
+        //     }
+        // })
+    }  
+
+
+    startRotation(delay) {
+        debugger
+        let that = this
+        this.timer.restart(that.rotate, delay || 0)
+    }
+
+    stopRotation() {
+        this.timer.stop()
     }
 }
 
