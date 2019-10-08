@@ -35,10 +35,13 @@ class Game {
             that.countries = data.objects.countries
             that.countriescoord = topojson.feature(data, that.countries)
         })
+        
+        
      
     }
     
     scale() {
+        // debugger
         this.canvas.attr('width', this.width).attr('height', this.height)
         this.projection
             .scale((this.scaleFactor * Math.min(this.width, this.height)) / 2)

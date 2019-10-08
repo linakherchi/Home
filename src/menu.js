@@ -8,7 +8,10 @@ const closeMainMenu = () => {
 
 const Welcome = {
     setButtons(){
+        // debugger
+        // var audio = new Audio('menu.wav')
         const easyButton = document.getElementById("easy-button")
+        // $('#easy-button').mouseenter(function(){audio.play()})
         const mediumButton = document.getElementById("medium-button")
         const hardButton = document.getElementById("hard-button")
         const extremeButton = document.getElementById("extreme-button")

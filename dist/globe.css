@@ -4,9 +4,6 @@ html, body {
   background-image: url('starfield.png');
 }
 
-#globe {
-  cursor: move;  
-}
 
 #current {
   position: absolute;
@@ -238,7 +235,7 @@ form{
     font-size: 25px;
     position: absolute;
     left: 800px;
-    bottom: 750px;
+    bottom: 747px;
     margin-left: 350px;
 }
 
@@ -308,6 +305,43 @@ form{
   top: 220px;
   font-size: 17px;
   left: 335px;
+}
 
+#github-profile{
+ filter: grayscale(100%);
+ position: absolute;
+ right: 1380px;
+}
+
+#github-profile:hover{
+ filter: grayscale(0%);
+ position: absolute;
+ right: 1380px;
+}
+
+#linkedin-profile{
+ filter: grayscale(100%);
+ right: 1330px;
+ position: absolute;
+}
+
+#linkedin-profile:hover{
+ filter: grayscale(0%);
+ right: 1330px;
+ position: absolute;
+}
+
+
+
+#game{
+  display: flex
+}
+
+#left-side{
+  flex-direction: column
+}
+
+#right-side{
+  flex-direction: column
 }
 
