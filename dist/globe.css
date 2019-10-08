@@ -34,9 +34,280 @@ html, body {
 .question-shown{
   position: absolute;
   left: 750px;
-  bottom: 500px;
+  bottom: 350px;
 }
 
-#form-question{
-  
+
+#gameplay-nav-group{
+  margin-top: 50px;
+  align-items: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
+
+#easy-button{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: black;
+  background-color: white;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#easy-button:focus{
+  outline: none
+}
+
+#easy-button:hover{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: white;
+  background-color: black;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#medium-button{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: black;
+  background-color: white;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#medium-button:focus{
+  outline: none
+}
+
+#medium-button:hover{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: white;
+  background-color: black;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#hard-button{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: black;
+  background-color: white;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#hard-button:focus{
+  outline: none
+}
+
+#hard-button:hover{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: white;
+  background-color: black;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#extreme-button{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: black;
+  background-color: white;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#extreme-button:focus{
+  outline: none
+}
+
+#extreme-button:hover{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: white;
+  background-color: black;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#how-to-play-button{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: black;
+  background-color: white;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#how-to-play-button:focus{
+  outline: none
+}
+
+#how-to-play-button:hover{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: white;
+  background-color: black;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+form{
+  display: flex;
+  flex-direction: column;
+  color: white;
+  margin-left: 150px;
+  font-family: "Lucida Console", Monaco, monospace;
+}
+
+/* #form-question{
+  margin-top: 100px;
+} */
+
+#question{
+  margin-bottom: 10px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 25px;
+}
+
+#your-score{
+    color: white;
+    font-weight: bold;
+    display: flex;
+    /* flex-direction: row; */
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 25px;
+    position: absolute;
+    left: 800px;
+    bottom: 750px;
+    margin-left: 350px;
+}
+
+#star{
+  color: yellow;
+  position: absolute;
+  left: 1100px;
+  bottom: 765px;
+}
+
+#fill-country:focus{
+  outline: none
+}
+
+#fill-country{
+  width: 170px;
+  height: 40px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 17px;
+  margin-left: 150px;
+  border-radius: 20px;
+}
+
+#enter{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: black;
+  background-color: white;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  width: 70px;
+  margin-left: 200px;
+}
+
+#enter:hover{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: white;
+  background-color: black;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  width: 70px;
+  margin-left: 200px;
+}
+
+#enter:focus{
+  outline: none
+}
+
+.try-again-hidden{
+  display: none;
+}
+
+.try-again{
+  position: absolute;
+  top: 220px;
+  font-size: 17px;
+  left: 335px;
+
+}
+
