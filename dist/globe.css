@@ -345,3 +345,59 @@ form{
   flex-direction: column
 }
 
+.about-section-hidden{
+  display: none
+}
+
+.about-section{
+  font-family: "Lucida Console", Monaco, monospace;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  border-color: white;
+  border-radius: 20px;
+  border-width: 4px;
+  border: solid;
+  width: 300px;
+  position: absolute;
+  left: 600px;
+  padding: 10px;
+  top: 200px;
+}
+
+#go-back{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: black;
+  background-color: white;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#go-back:hover{
+  font-family: "Lucida Console", Monaco, monospace;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-right: 12px;
+  padding-left: 12px;
+  color: white;
+  background-color: black;
+  border: solid white;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#go-back:focus{
+  outline: none;
+}
+
+
+
+
