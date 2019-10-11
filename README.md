@@ -41,8 +41,4 @@ Then, I drew a transparent line at the center of the globe and all what was left
                  
                     that.showQuestion()
                 }
-    }```
-    
-    
-    
-    
+    }
