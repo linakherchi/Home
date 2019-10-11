@@ -16,7 +16,7 @@ One of the functionalities of the game was to stop the rotation of the globe whe
 After doing some research, I found a d3 method that saved me: path.centroid(). This method allowed me to take the centroid (which was a single point with lat-lng coordinates) of each geometry related to a country and convert it to x-y coordinates.
 Then, I drew a transparent line at the center of the globe and all what was left was to check for intersections between this line and the centroid of the country selected.
 
-Below is the function that helped me stop the rotation at a specific centroid: 
+<i>Below is the function that helped me stop the rotation at a specific centroid:</i> 
 
 ```javascript
   rotate(elapsed) {
@@ -41,8 +41,7 @@ Below is the function that helped me stop the rotation at a specific centroid:
                  
                     that.showQuestion()
                 }
-    }
-    ```
+    }```
     
     
     
