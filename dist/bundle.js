@@ -91,7 +91,7 @@
   !*** ./src/game.js ***!
   \*********************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -99,16 +99,18 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Welcome = __webpack_require__(/*! ./menu.js */ "./src/menu.js");
-
-var Levels = __webpack_require__(/*! ./levels.js */ "./src/levels.js"); // import { showQuestion } from './question'
-
-
 var Game = /*#__PURE__*/function () {
-  function Game() {
+  function Game(levelName, levelData) {
     _classCallCheck(this, Game);
 
-    Welcome.setButtons(this);
+    // setting levels and levelData as instance to be accessed elsewhere
+    this.levelName = levelName;
+    this.levelData = levelData; // create canvas where Globe will be appended
+
+    this.canvas = document.createElement("canvas");
+    this.canvas.setAttribute("id", "globe");
+    document.getElementById("root").append(this.canvas); // setting globe properties
+
     this.projection = d3.geoOrthographic().precision(0.1);
     this.angles = {
       x: -20,
@@ -117,7 +119,8 @@ var Game = /*#__PURE__*/function () {
     };
     this.lastTime = d3.now();
     this.degPerSec = 40;
-    this.degPerMs = this.degPerSec / 1000;
+    this.degPerMs = this.degPerSec / 1000; // 
+
     this.canvas = d3.select('#globe');
     this.context = this.canvas.node().getContext('2d');
     this.width = document.documentElement.clientWidth;
@@ -133,9 +136,12 @@ var Game = /*#__PURE__*/function () {
     this.scaleFactor = 0.9;
     this.colorCountry = '#0ff';
     this.radar = document.querySelector("#globe");
-    this.radarContext = this.radar.getContext("2d");
-    this.form = document.getElementById('form-question');
-    this.form.onsubmit = this.submit.bind(this);
+    this.radarContext = this.radar.getContext("2d"); // const form = document.createElement("form").setAttribute("id", "form-question")
+    // document.getElementById("root").append(form)
+    // this.form = document.getElementById('form-question')
+    // this.form.onsubmit = this.submit.bind(this)
+    // Loading land into globe
+
     var that = this;
     d3.json('https://unpkg.com/world-atlas@1/world/110m.json', function (data) {
       that.land = data.objects.land;
@@ -143,6 +149,7 @@ var Game = /*#__PURE__*/function () {
       that.countries = data.objects.countries;
       that.countriescoord = topojson.feature(data, that.countries);
     });
+    this.start(this.levelName);
   }
 
   _createClass(Game, [{
@@ -285,11 +292,11 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "start",
     value: function start(difficulty) {
-      var star = document.getElementsByClassName('fas fa-star-hidden')[0];
-      star.className = "fas fa-star";
+      // let star = document.getElementsByClassName('fas fa-star-hidden')[0];
+      // star.className ="fas fa-star"
       var that = this;
       this.score = 0;
-      var level = d3.tsv(Levels[difficulty].tsv, function (data1) {
+      var level = d3.tsv(this.levelData, function (data1) {
         that.countryList = data1;
 
         if (that.countryList) {
@@ -306,8 +313,7 @@ var Game = /*#__PURE__*/function () {
           that.countrySelected = Object.values(that.countryList).find(function (el) {
             return el.id === randomId;
           });
-          console.log(that.countrySelected.name);
-          document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength;
+          console.log(that.countrySelected.name); // document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength
         }
       });
       this.drawEarth();
@@ -343,242 +349,6 @@ module.exports = Game;
 
 /***/ }),
 
-/***/ "./src/globe.js":
-/*!**********************!*\
-  !*** ./src/globe.js ***!
-  \**********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Levels = __webpack_require__(/*! ./levels.js */ "./src/levels.js"); // Configuration
-//
-// ms to wait after dragging before auto-rotating
-
-
-var rotationDelay = 3000; // scale of the globe (not the canvas element)
-
-var scaleFactor = 0.9; // autorotation speed
-
-var degPerSec = 6; // start angles
-
-var angles = {
-  x: -20,
-  y: 40,
-  z: 0
-}; // colors
-
-var colorWater = '#fff';
-var colorLand = '#111';
-var colorGraticule = '#ccc';
-var colorCountry = '#a00'; //
-// Handler
-//
-
-function enter(country) {
-  // debugger
-  var country = countryList.find(function (c) {
-    return c.id === country.id;
-  });
-  current.text(country && country.name || '');
-}
-
-function leave(country) {
-  current.text('');
-} //
-// Variables
-//
-
-
-var current = d3.select('#current');
-var canvas = d3.select('#globe');
-var context = canvas.node().getContext('2d');
-var water = {
-  type: 'Sphere'
-};
-var projection = d3.geoOrthographic().precision(0.1);
-var graticule = d3.geoGraticule10();
-var path = d3.geoPath(projection).context(context);
-var v0; // Mouse position in Cartesian coordinates at start of drag gesture.
-
-var r0; // Projection rotation as Euler angles at start.
-
-var q0; // Projection rotation as versor at start.
-
-var lastTime = d3.now();
-var degPerMs = degPerSec / 1000;
-var width, height;
-var land, countries;
-var countryList;
-var autorotate, now, diff, roation;
-var currentCountry; //
-// Functions
-//
-
-function setAngles() {
-  var rotation = projection.rotate();
-  rotation[0] = angles.y;
-  rotation[1] = angles.x;
-  rotation[2] = angles.z;
-  projection.rotate(rotation);
-}
-
-function scale() {
-  width = document.documentElement.clientWidth;
-  height = document.documentElement.clientHeight;
-  canvas.attr('width', width).attr('height', height);
-  projection.scale(scaleFactor * Math.min(width, height) / 2).translate([width / 2, height / 2]);
-  render();
-}
-
-function startRotation(delay) {
-  autorotate.restart(rotate, delay || 0);
-}
-
-function stopRotation() {
-  autorotate.stop();
-}
-
-function dragstarted() {
-  v0 = versor.cartesian(projection.invert(d3.mouse(this)));
-  r0 = projection.rotate();
-  q0 = versor(r0);
-  stopRotation();
-}
-
-function dragged() {
-  var v1 = versor.cartesian(projection.rotate(r0).invert(d3.mouse(this)));
-  var q1 = versor.multiply(q0, versor.delta(v0, v1));
-  var r1 = versor.rotation(q1);
-  projection.rotate(r1);
-  render();
-}
-
-function dragended() {
-  startRotation(rotationDelay);
-}
-
-function render() {
-  context.clearRect(0, 0, width, height);
-  fill(water, colorWater);
-  stroke(graticule, colorGraticule);
-  fill(land, colorLand);
-
-  if (currentCountry) {
-    fill(currentCountry, colorCountry);
-  }
-}
-
-function fill(obj, color) {
-  context.beginPath();
-  path(obj);
-  context.fillStyle = color;
-  context.fill();
-}
-
-function stroke(obj, color) {
-  context.beginPath();
-  path(obj);
-  context.strokeStyle = color;
-  context.stroke();
-}
-
-function rotate(elapsed) {
-  now = d3.now();
-  diff = now - lastTime;
-
-  if (diff < elapsed) {
-    rotation = projection.rotate();
-    rotation[0] += diff * degPerMs;
-    projection.rotate(rotation);
-    render();
-  }
-
-  lastTime = now;
-} // https://github.com/d3/d3-polygon
-
-
-function polygonContains(polygon, point) {
-  var n = polygon.length;
-  var p = polygon[n - 1];
-  var x = point[0],
-      y = point[1];
-  var x0 = p[0],
-      y0 = p[1];
-  var x1, y1;
-  var inside = false;
-
-  for (var i = 0; i < n; ++i) {
-    p = polygon[i], x1 = p[0], y1 = p[1];
-    if (y1 > y !== y0 > y && x < (x0 - x1) * (y - y1) / (y0 - y1) + x1) inside = !inside;
-    x0 = x1, y0 = y1;
-  }
-
-  return inside;
-} // function mousemove() {
-//     var c = getCountry(this)
-//     if (!c) {
-//         if (currentCountry) {
-//             leave(currentCountry)
-//             currentCountry = undefined
-//             render()
-//         }
-//         return
-//     }
-//     if (c === currentCountry) {
-//         return
-//     }
-//     currentCountry = c
-//     render()
-//     enter(c)
-// }
-// function getCountry(event) {
-//     var pos = projection.invert(d3.mouse(event))
-//     return countries.features.find(function (f) {
-//         return f.geometry.coordinates.find(function (c1) {
-//             return polygonContains(c1, pos) || c1.find(function (c2) {
-//                 return polygonContains(c2, pos)
-//             })
-//         })
-//     })
-// }
-//
-// Initialization
-//
-
-
-setAngles(); // canvas
-//     .call(d3.drag()
-//         .on('start', dragstarted)
-//         .on('drag', dragged)
-//         .on('end', dragended)
-//     )
-//     .on('mousemove', mousemove)
-
-function loadData(cb) {
-  // debugger
-  d3.json('https://unpkg.com/world-atlas@1/world/110m.json', function (error, world) {
-    if (error) throw error;
-    var land = topojson.feature(world, world.objects.land);
-    d3.tsv('https://gist.githubusercontent.com/linakherchi/641dd07aec8f7679a08f3d61f1181249/raw/040a63d20539644f136c19667b27dad3f9e56669/capitals%2520and%2520levels', function (error, countries) {
-      if (error) throw error;
-      var countries1 = topojson.feature(world, world.objects.countries); // debugger
-      // cb(world, countries)
-    });
-  });
-}
-
-loadData(function (world, cList) {
-  // debugger
-  land = topojson.feature(world, world.objects.land);
-  countries = topojson.feature(world, world.objects.countries);
-  countryList = cList;
-  window.addEventListener('resize', scale);
-  scale();
-  autorotate = d3.timer(rotate);
-});
-
-/***/ }),
-
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -586,14 +356,12 @@ loadData(function (world, cList) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Globe = __webpack_require__(/*! ./globe.js */ "./src/globe.js");
-
-var Game = __webpack_require__(/*! ./game.js */ "./src/game.js");
-
+// const Globe = require("./globe.js");
 var Levels = __webpack_require__(/*! ./levels */ "./src/levels.js");
 
-window.Game = Game;
-document.addEventListener("DOMContentLoaded", function () {// game = new Game()
+document.addEventListener("DOMContentLoaded", function () {
+  // debugger
+  new Levels(); // game = new Game()
 });
 
 /***/ }),
@@ -603,7 +371,7 @@ document.addEventListener("DOMContentLoaded", function () {// game = new Game()
   !*** ./src/levels.js ***!
   \***********************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -611,29 +379,42 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+var Game = __webpack_require__(/*! ./game.js */ "./src/game.js");
+
 var Levels = /*#__PURE__*/function () {
   function Levels() {
     _classCallCheck(this, Levels);
 
-    this.extremeLevel = {
-      tsv: 'https://gist.githubusercontent.com/linakherchi/279a80d6c30bd28654b3570554e03140/raw/2d898cf90669f915047c1c4a7f7d3fd88dc2fda5/Extreme'
-    };
-    this.hardLevel = {
-      tsv: 'https://gist.githubusercontent.com/linakherchi/c22e6dbf6bdc0ecd4d927b0b8833057d/raw/d352de2211c3866f21c094b66694af27f1dee45b/Hard'
-    };
-    this.mediumLevel = {
-      tsv: 'https://gist.githubusercontent.com/linakherchi/bb8cc8413204178dc7fd6300bc4bb806/raw/06ca7a9d901b72516ec2862761fc363a6627c4f1/Medium'
-    };
-    this.easyLevel = {
-      tsv: 'https://gist.githubusercontent.com/linakherchi/0545583fbff6cb3a5beea4a82c6788f0/raw/234af1e606561222c652072a1ac087e396eb0fc6/Easy'
-    };
     this.render();
   }
 
   _createClass(Levels, [{
     key: "render",
     value: function render() {
+      // debugger
+      var extremeLevel = 'https://gist.githubusercontent.com/linakherchi/279a80d6c30bd28654b3570554e03140/raw/2d898cf90669f915047c1c4a7f7d3fd88dc2fda5/Extreme';
+      var hardLevel = 'https://gist.githubusercontent.com/linakherchi/c22e6dbf6bdc0ecd4d927b0b8833057d/raw/d352de2211c3866f21c094b66694af27f1dee45b/Hard';
+      var mediumLevel = 'https://gist.githubusercontent.com/linakherchi/bb8cc8413204178dc7fd6300bc4bb806/raw/06ca7a9d901b72516ec2862761fc363a6627c4f1/Medium';
+      var easyLevel = 'https://gist.githubusercontent.com/linakherchi/0545583fbff6cb3a5beea4a82c6788f0/raw/234af1e606561222c652072a1ac087e396eb0fc6/Easy';
+      var div = document.createElement("div");
+      div.setAttribute("id", "main-menu");
+      var menuButtons = ["Easy", "Medium", "Hard", "Extreme", "How To Play"];
+      menuButtons.forEach(function (button) {
+        var buttonElement = document.createElement("button");
+        buttonElement.setAttribute("id", "menu-button");
+        buttonElement.innerHTML = button;
+
+        if (button !== "How To Play") {
+          buttonElement.addEventListener("click", function () {
+            var downcaseLevel = button.toLowerCase();
+            new Game(button, eval(downcaseLevel + "Level"));
+          });
+        }
+
+        div.append(buttonElement);
+      });
       var root = document.getElementById("root");
+      root.append(div);
     }
   }]);
 
@@ -641,85 +422,6 @@ var Levels = /*#__PURE__*/function () {
 }();
 
 module.exports = Levels;
-
-/***/ }),
-
-/***/ "./src/menu.js":
-/*!*********************!*\
-  !*** ./src/menu.js ***!
-  \*********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-var closeMainMenu = function closeMainMenu() {
-  var mainMenu = document.getElementsByClassName('main-menu')[0]; // debugger
-
-  mainMenu.className = 'main-menu-close';
-};
-
-var openMainMenu = function openMainMenu() {
-  var mainMenu = document.getElementsByClassName('main-menu-close')[0]; // debugger
-
-  mainMenu.className = 'main-menu';
-};
-
-var openAbout = function openAbout() {
-  var about = document.getElementsByClassName('about-section-hidden')[0];
-  about.className = 'about-section';
-};
-
-var closeAbout = function closeAbout() {
-  var about = document.getElementsByClassName('about-section')[0];
-  about.className = 'about-section-hidden';
-};
-
-var Welcome = {
-  setButtons: function setButtons() {
-    // debugger
-    // var audio = new Audio('menu.wav')
-    var easyButton = document.getElementById("easy-button"); // $('#easy-button').mouseenter(function(){audio.play()})
-
-    var mediumButton = document.getElementById("medium-button");
-    var hardButton = document.getElementById("hard-button");
-    var extremeButton = document.getElementById("extreme-button");
-    var aboutButton = document.getElementById("how-to-play-button");
-    var goBack = document.getElementById('go-back');
-    easyButton.addEventListener('click', function (e) {
-      closeMainMenu();
-      setTimeout(function () {
-        return game.start('Easy');
-      }, 200);
-    });
-    mediumButton.addEventListener('click', function (e) {
-      closeMainMenu();
-      setTimeout(function () {
-        return game.start('Medium');
-      }, 200);
-    });
-    hardButton.addEventListener('click', function (e) {
-      closeMainMenu();
-      setTimeout(function () {
-        return game.start('Hard');
-      }, 200);
-    });
-    extremeButton.addEventListener('click', function (e) {
-      closeMainMenu();
-      setTimeout(function () {
-        return game.start('Extreme');
-      }, 200);
-    });
-    aboutButton.addEventListener('click', function (e) {
-      closeMainMenu();
-      openAbout();
-    });
-    goBack.addEventListener('click', function (e) {
-      closeAbout();
-      openMainMenu();
-    });
-  },
-  closeMainMenu: closeMainMenu
-};
-module.exports = Welcome;
 
 /***/ })
 

@@ -1,17 +1,21 @@
 
-const Welcome = require("./menu.js");
-const Levels = require("./levels.js");
-// import { showQuestion } from './question'
 
 class Game {
-    constructor() {
-        
-        Welcome.setButtons(this);
+    constructor(levelName, levelData) {
+        // setting levels and levelData as instance to be accessed elsewhere
+        this.levelName = levelName
+        this.levelData = levelData
+        // create canvas where Globe will be appended
+        this.canvas = document.createElement("canvas")
+        this.canvas.setAttribute("id", "globe")
+        document.getElementById("root").append(this.canvas)
+        // setting globe properties
         this.projection = d3.geoOrthographic().precision(0.1)
         this.angles = { x: -20, y: 40, z: 0 }
         this.lastTime = d3.now()
         this.degPerSec = 40
         this.degPerMs = this.degPerSec / 1000
+        // 
         this.canvas = d3.select('#globe')
         this.context = this.canvas.node().getContext('2d')
         this.width = document.documentElement.clientWidth
@@ -26,8 +30,12 @@ class Game {
         this.colorCountry = '#0ff';
         this.radar = document.querySelector("#globe")
         this.radarContext = this.radar.getContext("2d")
-        this.form = document.getElementById('form-question')
-        this.form.onsubmit = this.submit.bind(this)
+        // const form = document.createElement("form").setAttribute("id", "form-question")
+        // document.getElementById("root").append(form)
+        // this.form = document.getElementById('form-question')
+        // this.form.onsubmit = this.submit.bind(this)
+
+        // Loading land into globe
         let that = this
         d3.json('https://unpkg.com/world-atlas@1/world/110m.json', function (data) {
             that.land = data.objects.land
@@ -35,6 +43,8 @@ class Game {
             that.countries = data.objects.countries
             that.countriescoord = topojson.feature(data, that.countries)
         })
+
+        this.start(this.levelName)
         
         
      
@@ -174,12 +184,12 @@ class Game {
     }
     
     start(difficulty){
-        let star = document.getElementsByClassName('fas fa-star-hidden')[0];
-        star.className ="fas fa-star"
+        // let star = document.getElementsByClassName('fas fa-star-hidden')[0];
+        // star.className ="fas fa-star"
         let that = this;
        this.score = 0
        
-        let level = d3.tsv(Levels[difficulty].tsv, function(data1){
+        let level = d3.tsv(this.levelData, function(data1){
             that.countryList = data1
             
             if (that.countryList){
@@ -191,7 +201,7 @@ class Game {
                 that.polygon = that.countriescoord.features.find(function (el) { return el.id === randomId }) 
                 that.countrySelected = Object.values(that.countryList).find(function (el){return el.id === randomId})
                 console.log(that.countrySelected.name)
-                document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength
+                // document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength
             }
         })
         this.drawEarth()

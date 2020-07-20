@@ -1,12 +1,12 @@
-const Globe = require("./globe.js");
-const Game = require("./game.js");
+// const Globe = require("./globe.js");
+
 const Levels = require("./levels")
 
-window.Game = Game 
+ 
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    
-
+    // debugger
+    new Levels()
     // game = new Game()
 });
