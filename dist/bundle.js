@@ -101,11 +101,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var Game = /*#__PURE__*/function () {
   function Game(levelName, levelData) {
+    var _this = this;
+
     _classCallCheck(this, Game);
 
-    // setting levels and levelData as instance to be accessed elsewhere
+    document.getElementById("main-menu").remove(); // setting levels and levelData as instance to be accessed elsewhere
+
     this.levelName = levelName;
-    this.levelData = levelData; // create canvas where Globe will be appended
+    this.levelData = levelData;
+    this.score = 0; // create canvas where Globe will be appended
 
     this.canvas = document.createElement("canvas");
     this.canvas.setAttribute("id", "globe");
@@ -142,23 +146,102 @@ var Game = /*#__PURE__*/function () {
     // this.form.onsubmit = this.submit.bind(this)
     // Loading land into globe
 
-    var that = this;
+    var that = this; // debugger
+
     d3.json('https://unpkg.com/world-atlas@1/world/110m.json', function (data) {
+      // debugger
       that.land = data.objects.land;
       that.landcoord = topojson.feature(data, that.land);
       that.countries = data.objects.countries;
-      that.countriescoord = topojson.feature(data, that.countries);
+      that.countriescoord = topojson.feature(data, that.countries); // debugger
     });
-    this.start(this.levelName);
+    setTimeout(function () {
+      return _this.loadDataAndSelectCountry();
+    }, 1000);
   }
 
   _createClass(Game, [{
+    key: "loadDataAndSelectCountry",
+    value: function loadDataAndSelectCountry() {
+      // debugger
+      // let star = document.getElementsByClassName('fas fa-star-hidden')[0];
+      // star.className ="fas fa-star"
+      var that = this;
+      d3.tsv(this.levelData, function (data1) {
+        delete data1.columns;
+        that.countryList = data1; // debugger 
+
+        if (that.countryList) {
+          that.countryListLength = that.countryList.length;
+          that.countryIds = [];
+          Object.values(that.countryList).forEach(function (country) {
+            return that.countryIds.push(country.id);
+          }); // debugger
+
+          var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)]; // debugger
+
+          that.polygon = that.countriescoord.features.find(function (el) {
+            return el.id === randomId;
+          }); // debugger
+
+          that.countrySelected = Object.values(that.countryList).find(function (el) {
+            return el.id === randomId;
+          }); // debugger
+
+          console.log(that.countrySelected.name); // document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength
+        }
+      });
+      this.drawEarth();
+      this.play();
+    }
+  }, {
+    key: "drawEarth",
+    value: function drawEarth() {
+      this.projection.rotate();
+      d3.geoPath(this.projection).context(d3.select('#globe').node().getContext('2d'));
+      this.scale();
+      this.render();
+    }
+  }, {
     key: "scale",
     value: function scale() {
-      // debugger
       this.canvas.attr('width', this.width).attr('height', this.height);
       this.projection.scale(this.scaleFactor * Math.min(this.width, this.height) / 2).translate([this.width / 3.5, this.height / 2]);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      this.context.clearRect(0, 0, this.width, this.height);
+      this.fill(this.water, this.colorWater);
+      this.stroke(this.graticule, this.colorGraticule);
+      this.fill(this.landcoord, this.colorLand);
+      this.radarContext.beginPath();
+      this.radarContext.moveTo(435, 0);
+      this.radarContext.lineTo(435, 1100);
+      this.radarContext.strokeStyle = 'transparent';
+      this.radarContext.stroke();
+    }
+  }, {
+    key: "rotate",
+    value: function rotate() {
+      var that = this;
+      var rotation;
+      var now = d3.now();
+      var diff = now - this.lastTime;
+      rotation = this.projection.rotate();
+      rotation[0] += diff * this.degPerMs;
+      this.projection.rotate(rotation);
+      this.centroid = this.path.centroid(this.polygon);
+      this.centroid = [Math.floor(this.centroid[0]), this.centroid[1]];
+      console.log(this.centroid);
       this.render();
+      this.lastTime = now;
+
+      if (that.centroid && that.centroid[0] >= 318 && that.centroid && that.centroid[0] <= 325) {
+        that.stopRotation();
+        that.fill(that.polygon, that.colorCountry);
+        that.showQuestion();
+      }
     }
   }, {
     key: "fill",
@@ -181,71 +264,16 @@ var Game = /*#__PURE__*/function () {
       this.context.stroke();
     }
   }, {
-    key: "render",
-    value: function render() {
-      var land;
-      var landcoord;
-      this.context.clearRect(0, 0, this.width, this.height);
-      this.fill(this.water, this.colorWater);
-      this.stroke(this.graticule, this.colorGraticule);
-      this.fill(this.landcoord, this.colorLand);
-      this.radarContext.beginPath();
-      this.radarContext.moveTo(435, 0);
-      this.radarContext.lineTo(435, 1100);
-      this.radarContext.strokeStyle = 'transparent';
-      this.radarContext.stroke(); // debugger
-
-      var projection = this.projection;
-    }
-  }, {
-    key: "rotate",
-    value: function rotate(elapsed) {
-      var that = this;
-      var rotation;
-      var now = d3.now();
-      var diff = now - this.lastTime;
-      rotation = this.projection.rotate();
-      rotation[0] += diff * this.degPerMs;
-      this.projection.rotate(rotation);
-      this.centroid = this.path.centroid(this.polygon);
-      this.centroid = [Math.floor(this.centroid[0]), this.centroid[1]];
-      this.render();
-      this.lastTime = now;
-
-      if (that.centroid && that.centroid[0] === 435 || that.centroid && that.centroid[0] === 434 || that.centroid && that.centroid[0] === 436) {
-        that.stopRotation();
-        that.fill(that.polygon, that.colorCountry);
-        that.showQuestion();
-      }
-    }
-  }, {
-    key: "setAngles",
-    value: function setAngles() {
-      var rotation = this.projection.rotate();
-      rotation[0] = this.angles.y;
-      rotation[1] = this.angles.x;
-      rotation[2] = this.angles.z;
-      this.projection.rotate(rotation);
-    }
-  }, {
-    key: "closeQuestion",
-    value: function closeQuestion() {
-      var question = document.getElementsByClassName('question-shown')[0];
-      question.className = 'question-hidden';
-    }
-  }, {
     key: "showQuestion",
     value: function showQuestion() {
       var question = document.getElementsByClassName('question-hidden')[0];
       question.className = 'question-shown';
     }
   }, {
-    key: "drawEarth",
-    value: function drawEarth() {
-      this.setAngles();
-      d3.geoPath(this.projection).context(d3.select('#globe').node().getContext('2d'));
-      this.scale();
-      this.render();
+    key: "closeQuestion",
+    value: function closeQuestion() {
+      var question = document.getElementsByClassName('question-shown')[0];
+      question.className = 'question-hidden';
     }
   }, {
     key: "submit",
@@ -273,6 +301,7 @@ var Game = /*#__PURE__*/function () {
           return el !== that.countrySelected;
         });
         that.randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
+        debugger;
         that.polygon = that.countriescoord.features.find(function (el) {
           return el.id === that.randomId;
         });
@@ -290,38 +319,9 @@ var Game = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "start",
-    value: function start(difficulty) {
-      // let star = document.getElementsByClassName('fas fa-star-hidden')[0];
-      // star.className ="fas fa-star"
-      var that = this;
-      this.score = 0;
-      var level = d3.tsv(this.levelData, function (data1) {
-        that.countryList = data1;
-
-        if (that.countryList) {
-          that.countryListLength = that.countryList.length;
-          that.countryIds = [];
-          Object.values(that.countryList).forEach(function (country) {
-            return that.countryIds.push(country.id);
-          });
-          that.countryIds.pop();
-          var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
-          that.polygon = that.countriescoord.features.find(function (el) {
-            return el.id === randomId;
-          });
-          that.countrySelected = Object.values(that.countryList).find(function (el) {
-            return el.id === randomId;
-          });
-          console.log(that.countrySelected.name); // document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength
-        }
-      });
-      this.drawEarth();
-      this.play();
-    }
-  }, {
     key: "play",
     value: function play() {
+      // debugger
       var that = this;
       this.timer = d3.timer(function (elapsed) {
         that.rotate(elapsed);
