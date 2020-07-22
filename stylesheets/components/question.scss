@@ -1,0 +1,93 @@
+#globe{
+    flex-direction: column;
+}
+.question-hidden{
+    display: none;
+  } 
+
+.question-shown{
+    flex-direction: column;;
+    left: 750px;
+    bottom: 350px;
+    #form-question{
+        margin-top: 100px;
+        #question{
+            margin-bottom: 10px;
+            font-family: "Lucida Console", Monaco, monospace;
+            font-size: 25px;
+            color: white;
+        }
+        #fill-country:focus{
+            outline: none
+          }
+          
+        #fill-country{
+            width: 170px;
+            height: 40px;
+            font-family: "Lucida Console", Monaco, monospace;
+            font-size: 17px;
+            margin-left: 150px;
+            border-radius: 20px;
+        }
+        #fill-country:focus{
+            outline: none
+          }
+          
+          #fill-country{
+            width: 170px;
+            height: 40px;
+            font-family: "Lucida Console", Monaco, monospace;
+            font-size: 17px;
+            margin-left: 150px;
+            border-radius: 20px;
+          }
+          
+          #enter{
+            font-family: "Lucida Console", Monaco, monospace;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            padding-right: 12px;
+            padding-left: 12px;
+            color: black;
+            background-color: white;
+            border: solid white;
+            border-radius: 7px;
+            font-weight: bold;
+            font-size: 16px;
+            width: 70px;
+            margin-left: 200px;
+          }
+          
+          #enter:hover{
+            font-family: "Lucida Console", Monaco, monospace;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            padding-right: 12px;
+            padding-left: 12px;
+            color: white;
+            background-color: black;
+            border: solid white;
+            border-radius: 7px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            width: 70px;
+            margin-left: 200px;
+          }
+          
+          #enter:focus{
+            outline: none
+          }
+          
+          .try-again-hidden{
+            display: none;
+          }
+          
+          .try-again{
+            position: absolute;
+            top: 220px;
+            font-size: 17px;
+            left: 335px;
+          }
+    } 
+}

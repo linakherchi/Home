@@ -113,7 +113,8 @@ var Game = /*#__PURE__*/function () {
 
     this.canvas = document.createElement("canvas");
     this.canvas.setAttribute("id", "globe");
-    document.getElementById("root").append(this.canvas); // setting globe properties
+    document.getElementById("root").prepend(this.canvas); // to change later -- this is just for testing -- will need to be append later
+    // setting globe properties
 
     this.projection = d3.geoOrthographic().precision(0.1);
     this.angles = {
@@ -205,7 +206,7 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "scale",
     value: function scale() {
-      this.canvas.attr('width', this.width).attr('height', this.height);
+      this.canvas.attr('width', this.width / 1.8).attr('height', this.height);
       this.projection.scale(this.scaleFactor * Math.min(this.width, this.height) / 2).translate([this.width / 3.5, this.height / 2]);
     }
   }, {
@@ -232,8 +233,8 @@ var Game = /*#__PURE__*/function () {
       rotation[0] += diff * this.degPerMs;
       this.projection.rotate(rotation);
       this.centroid = this.path.centroid(this.polygon);
-      this.centroid = [Math.floor(this.centroid[0]), this.centroid[1]];
-      console.log(this.centroid);
+      this.centroid = [Math.floor(this.centroid[0]), this.centroid[1]]; // console.log(this.centroid)
+
       this.render();
       this.lastTime = now;
 
@@ -266,6 +267,11 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "showQuestion",
     value: function showQuestion() {
+      var root = document.getElementById("root");
+      debugger;
+      root.style.display = "flex"; // const question = document.createElement("div")
+      // question.classList.add("question-shown")
+
       var question = document.getElementsByClassName('question-hidden')[0];
       question.className = 'question-shown';
     }

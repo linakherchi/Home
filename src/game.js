@@ -10,7 +10,8 @@ class Game {
         // create canvas where Globe will be appended
         this.canvas = document.createElement("canvas")
         this.canvas.setAttribute("id", "globe")
-        document.getElementById("root").append(this.canvas)
+        document.getElementById("root").prepend(this.canvas)
+        // to change later -- this is just for testing -- will need to be append later
         // setting globe properties
         this.projection = d3.geoOrthographic().precision(0.1)
         this.angles = { x: -20, y: 40, z: 0 }
@@ -95,7 +96,7 @@ class Game {
 
 
     scale() {
-        this.canvas.attr('width', this.width).attr('height', this.height)
+        this.canvas.attr('width', this.width /1.8 ).attr('height', this.height)
         this.projection
             .scale((this.scaleFactor * Math.min(this.width, this.height)) / 2)
             .translate([this.width / 3.5, this.height / 2])
@@ -124,7 +125,7 @@ class Game {
         this.projection.rotate(rotation)
         this.centroid = this.path.centroid(this.polygon)
         this.centroid = [Math.floor(this.centroid[0]), this.centroid[1]]
-        console.log(this.centroid)
+        // console.log(this.centroid)
         this.render()
         
         this.lastTime = now
@@ -160,6 +161,11 @@ class Game {
     
     
     showQuestion(){
+        const root = document.getElementById("root")
+        debugger
+        root.style.display = "flex"
+        // const question = document.createElement("div")
+        // question.classList.add("question-shown")
         const question = document.getElementsByClassName('question-hidden')[0];
         question.className = 'question-shown';
     };
