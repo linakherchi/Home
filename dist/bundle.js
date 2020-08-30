@@ -111,6 +111,8 @@ var Game = /*#__PURE__*/function () {
     this.levelData = levelData;
     this.score = 0; // create canvas where Globe will be appended
 
+    this.root = document.getElementById("root");
+    this.root.style.display = "flex";
     this.canvas = document.createElement("canvas");
     this.canvas.setAttribute("id", "globe");
     document.getElementById("root").prepend(this.canvas); // to change later -- this is just for testing -- will need to be append later
@@ -123,7 +125,7 @@ var Game = /*#__PURE__*/function () {
       z: 0
     };
     this.lastTime = d3.now();
-    this.degPerSec = 40;
+    this.degPerSec = 70;
     this.degPerMs = this.degPerSec / 1000; // 
 
     this.canvas = d3.select('#globe');
@@ -141,20 +143,14 @@ var Game = /*#__PURE__*/function () {
     this.scaleFactor = 0.9;
     this.colorCountry = '#0ff';
     this.radar = document.querySelector("#globe");
-    this.radarContext = this.radar.getContext("2d"); // const form = document.createElement("form").setAttribute("id", "form-question")
-    // document.getElementById("root").append(form)
-    // this.form = document.getElementById('form-question')
-    // this.form.onsubmit = this.submit.bind(this)
-    // Loading land into globe
+    this.radarContext = this.radar.getContext("2d"); // Loading land into globe
 
-    var that = this; // debugger
-
+    var that = this;
     d3.json('https://unpkg.com/world-atlas@1/world/110m.json', function (data) {
-      // debugger
       that.land = data.objects.land;
       that.landcoord = topojson.feature(data, that.land);
       that.countries = data.objects.countries;
-      that.countriescoord = topojson.feature(data, that.countries); // debugger
+      that.countriescoord = topojson.feature(data, that.countries);
     });
     setTimeout(function () {
       return _this.loadDataAndSelectCountry();
@@ -162,38 +158,38 @@ var Game = /*#__PURE__*/function () {
   }
 
   _createClass(Game, [{
+    key: "drawEarthAndStartPlaying",
+    value: function drawEarthAndStartPlaying() {
+      this.drawEarth();
+      this.play();
+    }
+  }, {
     key: "loadDataAndSelectCountry",
     value: function loadDataAndSelectCountry() {
-      // debugger
-      // let star = document.getElementsByClassName('fas fa-star-hidden')[0];
-      // star.className ="fas fa-star"
       var that = this;
-      d3.tsv(this.levelData, function (data1) {
+      d3.tsv(that.levelData, function (data1) {
         delete data1.columns;
-        that.countryList = data1; // debugger 
+        that.countryList = data1;
 
         if (that.countryList) {
           that.countryListLength = that.countryList.length;
           that.countryIds = [];
           Object.values(that.countryList).forEach(function (country) {
             return that.countryIds.push(country.id);
-          }); // debugger
-
-          var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)]; // debugger
-
+          });
+          var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
           that.polygon = that.countriescoord.features.find(function (el) {
             return el.id === randomId;
-          }); // debugger
-
+          });
           that.countrySelected = Object.values(that.countryList).find(function (el) {
             return el.id === randomId;
-          }); // debugger
-
-          console.log(that.countrySelected.name); // document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength
+          });
+          console.log(that.countrySelected.name);
         }
       });
-      this.drawEarth();
-      this.play();
+      setTimeout(function () {
+        return that.drawEarthAndStartPlaying();
+      }, 1000);
     }
   }, {
     key: "drawEarth",
@@ -249,11 +245,7 @@ var Game = /*#__PURE__*/function () {
     value: function fill(obj, color) {
       this.context.beginPath();
       this.path(obj);
-      this.context.fillStyle = color; // if (obj === this.polygon){
-      //     this.context.shadowBlur = 10
-      //     this.context.shadowColor = "black"
-      // }
-
+      this.context.fillStyle = color;
       this.context.fill();
     }
   }, {
@@ -267,13 +259,29 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "showQuestion",
     value: function showQuestion() {
-      var root = document.getElementById("root");
-      debugger;
-      root.style.display = "flex"; // const question = document.createElement("div")
-      // question.classList.add("question-shown")
-
-      var question = document.getElementsByClassName('question-hidden')[0];
-      question.className = 'question-shown';
+      this.form = document.createElement("form");
+      this.form.setAttribute("id", "form-question");
+      var questionTitle = document.createElement("h1");
+      questionTitle.setAttribute("id", "question-title");
+      questionTitle.innerHTML = "Guess the name of this country";
+      var input1 = document.createElement("input");
+      input1.setAttribute("id", "fill-country");
+      input1.setAttribute("type", "text");
+      input1.setAttribute("placeholder", "Your answer here");
+      var input2 = document.createElement("input");
+      input2.setAttribute("id", "enter");
+      input2.setAttribute("type", "submit");
+      input2.setAttribute("value", "Give it a try!");
+      this.form.append(questionTitle);
+      this.form.append(input1);
+      this.form.append(input2);
+      this.rightSide.appendChild(this.form);
+      var that = this;
+      this.form.addEventListener("submit", function () {
+        event.preventDefault();
+        var possibleAnswer = input1.value;
+        that.checkAnswer(possibleAnswer);
+      });
     }
   }, {
     key: "closeQuestion",
@@ -282,11 +290,15 @@ var Game = /*#__PURE__*/function () {
       question.className = 'question-hidden';
     }
   }, {
-    key: "submit",
-    value: function submit(e) {
-      e.preventDefault();
-      this.answer = e.target[0].value;
-      this.checkAnswer(this.answer);
+    key: "tryAgain",
+    value: function tryAgain() {
+      var h1 = document.createElement("h1");
+      h1.setAttribute("id", "try-again");
+      h1.innerHTML = "Try again ...";
+      this.form.append(h1);
+      setTimeout(function () {
+        return h1.remove();
+      }, 3000);
     }
   }, {
     key: "checkAnswer",
@@ -307,7 +319,6 @@ var Game = /*#__PURE__*/function () {
           return el !== that.countrySelected;
         });
         that.randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
-        debugger;
         that.polygon = that.countriescoord.features.find(function (el) {
           return el.id === that.randomId;
         });
@@ -317,21 +328,28 @@ var Game = /*#__PURE__*/function () {
         console.log(that.countrySelected.name);
         this.startRotation();
       } else {
-        document.getElementsByClassName('try-again-hidden')[0].className = 'try-again'; //    {document.getElementsByClassName('try-again-hidden')[0].className ='try-again'}, 3000)
-
-        setTimeout(function () {
-          document.getElementsByClassName('try-again')[0].className = 'try-again-hidden';
-        }, 3000);
+        this.tryAgain();
       }
     }
   }, {
     key: "play",
     value: function play() {
-      // debugger
+      this.createRightSide();
       var that = this;
       this.timer = d3.timer(function (elapsed) {
         that.rotate(elapsed);
       });
+    }
+  }, {
+    key: "createRightSide",
+    value: function createRightSide() {
+      this.rightSide = document.createElement('div');
+      this.rightSide.setAttribute("id", "right-side");
+      scoreSide = document.createElement("div");
+      scoreSide.setAttribute("id", "score");
+      scoreSide.innerHTML = "\u272C Your score : ".concat(this.score, " / ").concat(this.countryListLength);
+      this.rightSide.append(scoreSide);
+      this.root.append(this.rightSide);
     }
   }, {
     key: "startRotation",

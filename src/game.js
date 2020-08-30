@@ -8,6 +8,8 @@ class Game {
         this.levelData = levelData
         this.score = 0
         // create canvas where Globe will be appended
+        this.root = document.getElementById("root")
+        this.root.style.display ="flex"
         this.canvas = document.createElement("canvas")
         this.canvas.setAttribute("id", "globe")
         document.getElementById("root").prepend(this.canvas)
@@ -16,7 +18,7 @@ class Game {
         this.projection = d3.geoOrthographic().precision(0.1)
         this.angles = { x: -20, y: 40, z: 0 }
         this.lastTime = d3.now()
-        this.degPerSec = 40
+        this.degPerSec = 70
         this.degPerMs = this.degPerSec / 1000
         // 
         this.canvas = d3.select('#globe')
@@ -33,21 +35,15 @@ class Game {
         this.colorCountry = '#0ff';
         this.radar = document.querySelector("#globe")
         this.radarContext = this.radar.getContext("2d")
-        // const form = document.createElement("form").setAttribute("id", "form-question")
-        // document.getElementById("root").append(form)
-        // this.form = document.getElementById('form-question')
-        // this.form.onsubmit = this.submit.bind(this)
+
 
         // Loading land into globe
         let that = this
-        // debugger
         d3.json('https://unpkg.com/world-atlas@1/world/110m.json', function (data) {
-            // debugger
             that.land = data.objects.land
             that.landcoord = topojson.feature(data, that.land) 
             that.countries = data.objects.countries
             that.countriescoord = topojson.feature(data, that.countries)
-            // debugger
             
         })
         setTimeout(() => this.loadDataAndSelectCountry(), 1000)
@@ -56,36 +52,29 @@ class Game {
         
      
     }
-
+    drawEarthAndStartPlaying() {
+        this.drawEarth()
+        this.play()
+    }
         
     loadDataAndSelectCountry(){
-        // debugger
-        // let star = document.getElementsByClassName('fas fa-star-hidden')[0];
-        // star.className ="fas fa-star"
        let that = this;
-
-        d3.tsv(this.levelData, function(data1){
+            d3.tsv(that.levelData, function(data1){
             delete data1.columns
             that.countryList = data1
-            // debugger 
             if (that.countryList){
                 that.countryListLength = that.countryList.length
                 that.countryIds = [];
                 Object.values(that.countryList).forEach(country => that.countryIds.push(country.id))
-                // debugger
                 var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
-                // debugger
                 that.polygon = that.countriescoord.features.find(function (el) { return el.id === randomId }) 
-                // debugger
                 that.countrySelected = Object.values(that.countryList).find(function (el){return el.id === randomId})
-                // debugger
                 console.log(that.countrySelected.name)
-                // document.getElementById('your-score').innerHTML = 'Your score:' + that.score + '/' + that.countryListLength
             }
         })
-        this.drawEarth()
-        this.play() 
+        setTimeout(() => that.drawEarthAndStartPlaying(), 1000)
     }
+
 
     drawEarth(){
         this.projection.rotate()
@@ -144,10 +133,6 @@ class Game {
         this.context.beginPath()
         this.path(obj)
         this.context.fillStyle = color
-        // if (obj === this.polygon){
-        //     this.context.shadowBlur = 10
-        //     this.context.shadowColor = "black"
-        // }
         this.context.fill()
     }
     
@@ -161,13 +146,30 @@ class Game {
     
     
     showQuestion(){
-        const root = document.getElementById("root")
-        debugger
-        root.style.display = "flex"
-        // const question = document.createElement("div")
-        // question.classList.add("question-shown")
-        const question = document.getElementsByClassName('question-hidden')[0];
-        question.className = 'question-shown';
+        
+        this.form = document.createElement("form")
+        this.form.setAttribute("id", "form-question")
+        const questionTitle= document.createElement("h1")
+        questionTitle.setAttribute("id", "question-title")
+        questionTitle.innerHTML = "Guess the name of this country"
+        const input1 = document.createElement("input")
+        input1.setAttribute("id", "fill-country")
+        input1.setAttribute("type", "text")
+        input1.setAttribute("placeholder", "Your answer here")
+        const input2 = document.createElement("input")
+        input2.setAttribute("id", "enter")
+        input2.setAttribute("type", "submit")
+        input2.setAttribute("value", "Give it a try!")
+        this.form.append(questionTitle)
+        this.form.append(input1)
+        this.form.append(input2)
+        this.rightSide.appendChild(this.form)
+        let that = this
+        this.form.addEventListener("submit", () =>{
+            event.preventDefault()
+            const possibleAnswer = input1.value
+            that.checkAnswer(possibleAnswer)
+        })
     };
     
     
@@ -188,47 +190,56 @@ class Game {
 
     
 
-  
+  tryAgain(){
+      const h1 = document.createElement("h1")
+      h1.setAttribute("id", "try-again")
+      h1.innerHTML = "Try again ..."
+      this.form.append(h1)
+      setTimeout(()=> h1.remove(), 3000)
+  }
 
-    submit(e) {
-        e.preventDefault()
-        this.answer = e.target[0].value
-         this.checkAnswer(this.answer)
-    }
 
     checkAnswer(answer){
-        
         let that = this
         if (answer === this.countrySelected.name){
             var audio = new Audio('kids.wav');
             audio.play();
             that.score ++ 
-
             document.getElementById('your-score').innerHTML = 'Your score :' + that.score + '/' + that.countryListLength 
             that.form.reset()
             this.closeQuestion()
             that.countryIds = that.countryIds.filter(function(el){return el !== that.countrySelected.id})
             that.countryList = that.countryList.filter(function (el) { return el !== that.countrySelected })
             that.randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)]
-            debugger
+
             that.polygon = that.countriescoord.features.find(function (el) { return el.id === that.randomId }) 
             that.countrySelected = Object.values(that.countryList).find(function (el) { return el.id === that.randomId })
             console.log(that.countrySelected.name)
             this.startRotation()
         }else {
-            document.getElementsByClassName('try-again-hidden')[0].className = 'try-again' 
-        //    {document.getElementsByClassName('try-again-hidden')[0].className ='try-again'}, 3000)
-    setTimeout(function() { 
-            (document.getElementsByClassName('try-again')[0]).className = 'try-again-hidden'}, 3000)}
-        
+            this.tryAgain()
+        }
     }
 
     
     play(){
-        // debugger
+        this.createRightSide()
         let that = this;
         this.timer = d3.timer(function(elapsed){that.rotate(elapsed)}) 
     }  
+
+    createRightSide(){
+        this.rightSide = document.createElement('div')
+        this.rightSide.setAttribute("id", "right-side")
+        scoreSide = document.createElement("div")
+        scoreSide.setAttribute("id", "score")
+        scoreSide.innerHTML = `✬ Your score : ${this.score} / ${this.countryListLength}`
+        this.rightSide.append(scoreSide)
+        this.root.append(this.rightSide)
+
+
+
+    }
 
 
     startRotation() {

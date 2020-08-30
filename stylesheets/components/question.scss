@@ -1,21 +1,30 @@
-#globe{
-    flex-direction: column;
-}
+#right-side{
+  width: 50vw;
+  display:flex;
+  flex-direction: column;
+  font-family: "Lucida Console", Monaco, monospace;
+
 .question-hidden{
     display: none;
   } 
+#score{
+  height: 30vh;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  line-height: 10vh;
+  margin-left: 30vw;
+}
 
-.question-shown{
-    flex-direction: column;;
-    left: 750px;
-    bottom: 350px;
-    #form-question{
-        margin-top: 100px;
-        #question{
-            margin-bottom: 10px;
-            font-family: "Lucida Console", Monaco, monospace;
-            font-size: 25px;
-            color: white;
+#form-question{
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  color: white;
+        #question-title{
+          line-height: 15vh;
+          margin-left: 15vw;
+          font-size: 18px;
         }
         #fill-country:focus{
             outline: none
@@ -24,9 +33,7 @@
         #fill-country{
             width: 170px;
             height: 40px;
-            font-family: "Lucida Console", Monaco, monospace;
             font-size: 17px;
-            margin-left: 150px;
             border-radius: 20px;
         }
         #fill-country:focus{
@@ -34,60 +41,51 @@
           }
           
           #fill-country{
-            width: 170px;
-            height: 40px;
-            font-family: "Lucida Console", Monaco, monospace;
-            font-size: 17px;
-            margin-left: 150px;
             border-radius: 20px;
+            margin-left: 17vw;
+            border: solid white 1px;
+            padding: 10px 50px 10px 50px;
           }
           
           #enter{
-            font-family: "Lucida Console", Monaco, monospace;
-            padding-top: 7px;
-            padding-bottom: 7px;
-            padding-right: 12px;
-            padding-left: 12px;
             color: black;
             background-color: white;
             border: solid white;
             border-radius: 7px;
             font-weight: bold;
             font-size: 16px;
-            width: 70px;
-            margin-left: 200px;
+            margin-left: 17.5vw;
+            margin-top: 8vh;
+            width: 10vw;
+            height: 3vh;
+            padding-left: 3vw;
           }
           
           #enter:hover{
-            font-family: "Lucida Console", Monaco, monospace;
-            padding-top: 7px;
-            padding-bottom: 7px;
-            padding-right: 12px;
-            padding-left: 12px;
-            color: white;
+            color:white;
             background-color: black;
             border: solid white;
             border-radius: 7px;
             font-weight: bold;
             font-size: 16px;
-            cursor: pointer;
-            width: 70px;
-            margin-left: 200px;
+            margin-left: 17.5vw;
+            margin-top: 8vh;
+            width: 10vw;
+            height: 3vh;
+            padding-left: 3vw;
           }
           
           #enter:focus{
             outline: none
           }
           
-          .try-again-hidden{
-            display: none;
-          }
+       
           
-          .try-again{
-            position: absolute;
-            top: 220px;
-            font-size: 17px;
-            left: 335px;
+          #try-again{
+            font-size: 18px;
+            margin-left: 21vw;
+            margin-top: 4vh;
           }
-    } 
+    
+}
 }
