@@ -102,6 +102,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var Form = /*#__PURE__*/function () {
   function Form() {
     _classCallCheck(this, Form);
+
+    this.star = '✬';
   }
 
   _createClass(Form, [{
@@ -111,7 +113,7 @@ var Form = /*#__PURE__*/function () {
       this.rightSide.setAttribute("id", "right-side");
       scoreSide = document.createElement("div");
       scoreSide.setAttribute("id", "score");
-      scoreSide.innerHTML = "\u272C Your score : ".concat(score, " / ").concat(totalPoints);
+      scoreSide.innerHTML = "".concat(this.star, " Your score : ").concat(score, " / ").concat(totalPoints);
       this.rightSide.append(scoreSide);
       root.append(this.rightSide);
     }
@@ -158,6 +160,22 @@ var Form = /*#__PURE__*/function () {
         _this.input1.disabled = false;
         _this.input2.disabled = false;
       }, 1000);
+    }
+  }, {
+    key: "createEncouragementSide",
+    value: function createEncouragementSide(failedGuess) {
+      var h1 = document.createElement("h1");
+      h1.setAttribute("id", "last-encouragement");
+      h1.innerHTML = "The country you were trying to guess is ".concat(failedGuess, ", remember it for next time!");
+      this.form.append(h1);
+      this.input2.disabled = true;
+      this.input1.disabled = true;
+    }
+  }, {
+    key: "updateScore",
+    value: function updateScore(newScore, totalPoints) {
+      this.score = document.getElementById('score');
+      this.score.innerHTML = "".concat(this.star, " Your score : ").concat(newScore, " / ").concat(totalPoints);
     }
   }]);
 
@@ -326,7 +344,7 @@ var Game = /*#__PURE__*/function () {
 
       this.lastTime = now;
 
-      if (that.centroid && that.centroid[0] >= this.width / 5.3 && that.centroid && that.centroid[0] <= this.width / 5.1) {
+      if (that.centroid && that.centroid[0] >= this.width / 5.3 && that.centroid[0] <= this.width / 5.1) {
         that.stopRotation();
         that.fill(that.polygon, that.colorCountry);
         that.instanceOfForm.showQuestion(); // debugger
@@ -334,7 +352,7 @@ var Game = /*#__PURE__*/function () {
         this.form = document.getElementsByTagName("form")[0];
         this.form.addEventListener("submit", function () {
           event.preventDefault();
-          var possibleAnswer = document.getElementById("fill-country");
+          var possibleAnswer = document.getElementById("fill-country").value;
           that.checkAnswer(possibleAnswer);
         });
       }
@@ -366,10 +384,7 @@ var Game = /*#__PURE__*/function () {
     value: function lastTryEncouragement() {
       var _this3 = this;
 
-      var h1 = document.createElement("h1");
-      h1.setAttribute("id", "last-encouragement");
-      h1.innerHTML = "The country you were trying to guess is ".concat(this.countrySelected.name, ", remember it for next time!");
-      this.form.append(h1);
+      this.instanceOfForm.createEncouragementSide(this.countrySelected.name);
       setTimeout(function () {
         _this3.form.remove();
 
@@ -381,6 +396,7 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "checkAnswer",
     value: function checkAnswer(answer) {
+      // debugger
       var that = this;
 
       if (this.numTimesGuessed !== 1 && answer !== this.countrySelected.name) {
@@ -393,12 +409,16 @@ var Game = /*#__PURE__*/function () {
 
       if (answer == this.countrySelected.name) {
         this.numTimesGuessed = 3;
-        var audio = new Audio('kids.wav');
+        var audio = new Audio('./../dist/kids.wav');
+
+        if (audio) {
+          audio.play();
+        }
+
         audio.play();
-        that.score++;
-        document.getElementById('your-score').innerHTML = 'Your score :' + that.score + '/' + that.countryListLength;
-        that.form.reset();
-        this.closeQuestion();
+        this.score += 1;
+        this.instanceOfForm.updateScore(this.score, this.countryListLength);
+        this.form.remove();
         that.countryIds = that.countryIds.filter(function (el) {
           return el !== that.countrySelected.id;
         });

@@ -122,7 +122,7 @@ class Game {
         // console.log(this.width / 5)
         // console.log(this.width / 5.3)
         this.lastTime = now
-        if ((that.centroid && that.centroid[0] >= this.width / 5.3) && (that.centroid && that.centroid[0] <= this.width / 5.1) ) {
+        if ((that.centroid && that.centroid[0] >= this.width / 5.3 && that.centroid[0] <= this.width / 5.1) ) {
                     that.stopRotation()
                     
                     that.fill(that.polygon, that.colorCountry)
@@ -132,7 +132,7 @@ class Game {
                     this.form = document.getElementsByTagName("form")[0]
                     this.form.addEventListener("submit", () =>{
                         event.preventDefault()
-                        const possibleAnswer = document.getElementById("fill-country")
+                        const possibleAnswer = document.getElementById("fill-country").value
                         that.checkAnswer(possibleAnswer)
                     })
                 }
@@ -158,11 +158,6 @@ class Game {
     
 
     
-    
-    
-
-    
-    
 
     closeQuestion(){
         const question = document.getElementsByClassName('question-shown')[0];
@@ -175,10 +170,8 @@ class Game {
 
 
   lastTryEncouragement(){
-      const h1 = document.createElement("h1")
-      h1.setAttribute("id", "last-encouragement")
-      h1.innerHTML = `The country you were trying to guess is ${this.countrySelected.name}, remember it for next time!`
-      this.form.append(h1)
+      this.instanceOfForm.createEncouragementSide(this.countrySelected.name)
+
       setTimeout(() => {
           this.form.remove()
           this.selectCountry()
@@ -187,6 +180,7 @@ class Game {
   }
 
     checkAnswer(answer){
+        // debugger
         let that = this
         
         if (this.numTimesGuessed !== 1 && answer !== this.countrySelected.name){
@@ -198,12 +192,15 @@ class Game {
             }
         if (answer == this.countrySelected.name){
             this.numTimesGuessed = 3
-            var audio = new Audio('kids.wav');
+            var audio = new Audio('./../dist/kids.wav');
+            if (audio){
+                audio.play()
+            }
             audio.play();
-            that.score ++ 
-            document.getElementById('your-score').innerHTML = 'Your score :' + that.score + '/' + that.countryListLength 
-            that.form.reset()
-            this.closeQuestion()
+            this.score += 1
+            this.instanceOfForm.updateScore(this.score, this.countryListLength)
+            this.form.remove()
+          
             that.countryIds = that.countryIds.filter(function(el){return el !== that.countrySelected.id})
             that.countryList = that.countryList.filter(function (el) { return el !== that.countrySelected })
             that.randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)]

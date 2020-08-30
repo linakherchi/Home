@@ -1,12 +1,14 @@
 class Form{
-
+    constructor(){
+        this.star = '✬'
+    }
 
     createRightSide(root, score, totalPoints){
         this.rightSide = document.createElement('div')
         this.rightSide.setAttribute("id", "right-side")
         scoreSide = document.createElement("div")
         scoreSide.setAttribute("id", "score")
-        scoreSide.innerHTML = `✬ Your score : ${score} / ${totalPoints}`
+        scoreSide.innerHTML = `${this.star} Your score : ${score} / ${totalPoints}`
         this.rightSide.append(scoreSide)
         root.append(this.rightSide)
     }
@@ -48,6 +50,20 @@ class Form{
             this.input1.disabled = false
             this.input2.disabled = false}
             , 1000)
+    }
+
+    createEncouragementSide(failedGuess){
+        const h1 = document.createElement("h1")
+        h1.setAttribute("id", "last-encouragement")
+        h1.innerHTML = `The country you were trying to guess is ${failedGuess}, remember it for next time!`
+        this.form.append(h1)
+        this.input2.disabled = true 
+        this.input1.disabled = true 
+    }
+
+    updateScore(newScore, totalPoints){
+        this.score = document.getElementById('score')
+        this.score.innerHTML = `${this.star} Your score : ${newScore} / ${totalPoints}`
     }
 }
 
