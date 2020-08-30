@@ -1,5 +1,5 @@
 
-
+const Form = require('./form')
 class Game {
     constructor(levelName, levelData) {
         document.getElementById("main-menu").remove()
@@ -49,6 +49,7 @@ class Game {
         setTimeout(() => this.loadDataAndSelectCountry(), 1000)
 
         this.numTimesGuessed = 3
+        this.instanceOfForm = new Form()
         
      
     }
@@ -118,14 +119,22 @@ class Game {
         this.centroid = [Math.floor(this.centroid[0]), this.centroid[1]]
         // console.log(this.centroid)
         this.render()
-        
+        // console.log(this.width / 5)
+        // console.log(this.width / 5.3)
         this.lastTime = now
-        if ((that.centroid && that.centroid[0] >= 318) && (that.centroid && that.centroid[0] <= 325) ) {
+        if ((that.centroid && that.centroid[0] >= this.width / 5.3) && (that.centroid && that.centroid[0] <= this.width / 5.1) ) {
                     that.stopRotation()
                     
                     that.fill(that.polygon, that.colorCountry)
                  
-                    that.showQuestion()
+                    that.instanceOfForm.showQuestion()
+                    // debugger
+                    this.form = document.getElementsByTagName("form")[0]
+                    this.form.addEventListener("submit", () =>{
+                        event.preventDefault()
+                        const possibleAnswer = document.getElementById("fill-country")
+                        that.checkAnswer(possibleAnswer)
+                    })
                 }
     }
 
@@ -147,31 +156,7 @@ class Game {
 
     
     
-    showQuestion(){
-        this.form = document.createElement("form")
-        this.form.setAttribute("id", "form-question")
-        const questionTitle= document.createElement("h1")
-        questionTitle.setAttribute("id", "question-title")
-        questionTitle.innerHTML = "Guess the name of this country"
-        this.input1 = document.createElement("input")
-        this.input1.setAttribute("id", "fill-country")
-        this.input1.setAttribute("type", "text")
-        this.input1.setAttribute("placeholder", "Your answer here")
-        this.input2 = document.createElement("input")
-        this.input2.setAttribute("id", "enter")
-        this.input2.setAttribute("type", "submit")
-        this.input2.setAttribute("value", "Give it a try!")
-        this.form.append(questionTitle)
-        this.form.append(this.input1)
-        this.form.append(this.input2)
-        this.rightSide.appendChild(this.form)
-        let that = this
-        this.form.addEventListener("submit", () =>{
-            event.preventDefault()
-            const possibleAnswer = that.input1.value
-            that.checkAnswer(possibleAnswer)
-        })
-    };
+
     
     
     
@@ -187,19 +172,7 @@ class Game {
 
     
 
-  tryAgain(){
-      const h1 = document.createElement("h1")
-      h1.setAttribute("id", "try-again")
-      h1.innerHTML = `Try again ... You still have ${this.numTimesGuessed} guesse(s)`
-      this.form.append(h1)
-      this.input2.disabled = true 
-      this.input1.disabled = true 
-      setTimeout(()=> {
-          h1.remove()
-          this.input1.disabled = false
-          this.input2.disabled = false}
-          , 1000)
-  }
+
 
   lastTryEncouragement(){
       const h1 = document.createElement("h1")
@@ -218,7 +191,7 @@ class Game {
         
         if (this.numTimesGuessed !== 1 && answer !== this.countrySelected.name){
                 this.numTimesGuessed -= 1
-                this.tryAgain()
+                this.instanceOfForm.tryAgain(this.numTimesGuessed)
             }else if(this.numTimesGuessed == 1){
                 this.lastTryEncouragement()
                 this.numTimesGuessed = 3
@@ -244,23 +217,12 @@ class Game {
 
     
     play(){
-        this.createRightSide()
+        this.instanceOfForm.createRightSide(root, this.score, this.countryListLength)
         let that = this;
         this.timer = d3.timer(function(elapsed){that.rotate(elapsed)}) 
     }  
 
-    createRightSide(){
-        this.rightSide = document.createElement('div')
-        this.rightSide.setAttribute("id", "right-side")
-        scoreSide = document.createElement("div")
-        scoreSide.setAttribute("id", "score")
-        scoreSide.innerHTML = `✬ Your score : ${this.score} / ${this.countryListLength}`
-        this.rightSide.append(scoreSide)
-        this.root.append(this.rightSide)
 
-
-
-    }
 
 
     startRotation() {

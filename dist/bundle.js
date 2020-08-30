@@ -86,9 +86,9 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/game.js":
+/***/ "./src/form.js":
 /*!*********************!*\
-  !*** ./src/game.js ***!
+  !*** ./src/form.js ***!
   \*********************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -98,6 +98,90 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Form = /*#__PURE__*/function () {
+  function Form() {
+    _classCallCheck(this, Form);
+  }
+
+  _createClass(Form, [{
+    key: "createRightSide",
+    value: function createRightSide(root, score, totalPoints) {
+      this.rightSide = document.createElement('div');
+      this.rightSide.setAttribute("id", "right-side");
+      scoreSide = document.createElement("div");
+      scoreSide.setAttribute("id", "score");
+      scoreSide.innerHTML = "\u272C Your score : ".concat(score, " / ").concat(totalPoints);
+      this.rightSide.append(scoreSide);
+      root.append(this.rightSide);
+    }
+  }, {
+    key: "showQuestion",
+    value: function showQuestion() {
+      this.form = document.createElement("form");
+      this.form.setAttribute("id", "form-question");
+      var questionTitle = document.createElement("h1");
+      questionTitle.setAttribute("id", "question-title");
+      questionTitle.innerHTML = "Guess the name of this country";
+      this.input1 = document.createElement("input");
+      this.input1.setAttribute("id", "fill-country");
+      this.input1.setAttribute("type", "text");
+      this.input1.setAttribute("placeholder", "Your answer here");
+      this.input2 = document.createElement("input");
+      this.input2.setAttribute("id", "enter");
+      this.input2.setAttribute("type", "submit");
+      this.input2.setAttribute("value", "Give it a try!");
+      this.form.append(questionTitle);
+      this.form.append(this.input1);
+      this.form.append(this.input2);
+      this.rightSide.appendChild(this.form);
+    }
+  }, {
+    key: "tryAgain",
+    value: function tryAgain(numTimesGuessed) {
+      var _this = this;
+
+      var h1 = document.createElement("h1");
+      h1.setAttribute("id", "try-again");
+
+      if (numTimesGuessed == 1) {
+        h1.innerHTML = "Try again ... You still have ".concat(numTimesGuessed, " guess");
+      } else {
+        h1.innerHTML = "Try again ... You still have ".concat(numTimesGuessed, " guesses");
+      }
+
+      this.form.append(h1);
+      this.input2.disabled = true;
+      this.input1.disabled = true;
+      setTimeout(function () {
+        h1.remove();
+        _this.input1.disabled = false;
+        _this.input2.disabled = false;
+      }, 1000);
+    }
+  }]);
+
+  return Form;
+}();
+
+module.exports = Form;
+
+/***/ }),
+
+/***/ "./src/game.js":
+/*!*********************!*\
+  !*** ./src/game.js ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Form = __webpack_require__(/*! ./form */ "./src/form.js");
 
 var Game = /*#__PURE__*/function () {
   function Game(levelName, levelData) {
@@ -156,6 +240,7 @@ var Game = /*#__PURE__*/function () {
       return _this.loadDataAndSelectCountry();
     }, 1000);
     this.numTimesGuessed = 3;
+    this.instanceOfForm = new Form();
   }
 
   _createClass(Game, [{
@@ -236,13 +321,22 @@ var Game = /*#__PURE__*/function () {
       this.centroid = this.path.centroid(this.polygon);
       this.centroid = [Math.floor(this.centroid[0]), this.centroid[1]]; // console.log(this.centroid)
 
-      this.render();
+      this.render(); // console.log(this.width / 5)
+      // console.log(this.width / 5.3)
+
       this.lastTime = now;
 
-      if (that.centroid && that.centroid[0] >= 318 && that.centroid && that.centroid[0] <= 325) {
+      if (that.centroid && that.centroid[0] >= this.width / 5.3 && that.centroid && that.centroid[0] <= this.width / 5.1) {
         that.stopRotation();
         that.fill(that.polygon, that.colorCountry);
-        that.showQuestion();
+        that.instanceOfForm.showQuestion(); // debugger
+
+        this.form = document.getElementsByTagName("form")[0];
+        this.form.addEventListener("submit", function () {
+          event.preventDefault();
+          var possibleAnswer = document.getElementById("fill-country");
+          that.checkAnswer(possibleAnswer);
+        });
       }
     }
   }, {
@@ -262,70 +356,26 @@ var Game = /*#__PURE__*/function () {
       this.context.stroke();
     }
   }, {
-    key: "showQuestion",
-    value: function showQuestion() {
-      this.form = document.createElement("form");
-      this.form.setAttribute("id", "form-question");
-      var questionTitle = document.createElement("h1");
-      questionTitle.setAttribute("id", "question-title");
-      questionTitle.innerHTML = "Guess the name of this country";
-      this.input1 = document.createElement("input");
-      this.input1.setAttribute("id", "fill-country");
-      this.input1.setAttribute("type", "text");
-      this.input1.setAttribute("placeholder", "Your answer here");
-      this.input2 = document.createElement("input");
-      this.input2.setAttribute("id", "enter");
-      this.input2.setAttribute("type", "submit");
-      this.input2.setAttribute("value", "Give it a try!");
-      this.form.append(questionTitle);
-      this.form.append(this.input1);
-      this.form.append(this.input2);
-      this.rightSide.appendChild(this.form);
-      var that = this;
-      this.form.addEventListener("submit", function () {
-        event.preventDefault();
-        var possibleAnswer = that.input1.value;
-        that.checkAnswer(possibleAnswer);
-      });
-    }
-  }, {
     key: "closeQuestion",
     value: function closeQuestion() {
       var question = document.getElementsByClassName('question-shown')[0];
       question.className = 'question-hidden';
     }
   }, {
-    key: "tryAgain",
-    value: function tryAgain() {
-      var _this3 = this;
-
-      var h1 = document.createElement("h1");
-      h1.setAttribute("id", "try-again");
-      h1.innerHTML = "Try again ... You still have ".concat(this.numTimesGuessed, " guesse(s)");
-      this.form.append(h1);
-      this.input2.disabled = true;
-      this.input1.disabled = true;
-      setTimeout(function () {
-        h1.remove();
-        _this3.input1.disabled = false;
-        _this3.input2.disabled = false;
-      }, 1000);
-    }
-  }, {
     key: "lastTryEncouragement",
     value: function lastTryEncouragement() {
-      var _this4 = this;
+      var _this3 = this;
 
       var h1 = document.createElement("h1");
       h1.setAttribute("id", "last-encouragement");
       h1.innerHTML = "The country you were trying to guess is ".concat(this.countrySelected.name, ", remember it for next time!");
       this.form.append(h1);
       setTimeout(function () {
-        _this4.form.remove();
+        _this3.form.remove();
 
-        _this4.selectCountry();
+        _this3.selectCountry();
 
-        _this4.startRotation();
+        _this3.startRotation();
       }, 5000);
     }
   }, {
@@ -335,7 +385,7 @@ var Game = /*#__PURE__*/function () {
 
       if (this.numTimesGuessed !== 1 && answer !== this.countrySelected.name) {
         this.numTimesGuessed -= 1;
-        this.tryAgain();
+        this.instanceOfForm.tryAgain(this.numTimesGuessed);
       } else if (this.numTimesGuessed == 1) {
         this.lastTryEncouragement();
         this.numTimesGuessed = 3;
@@ -369,22 +419,11 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "play",
     value: function play() {
-      this.createRightSide();
+      this.instanceOfForm.createRightSide(root, this.score, this.countryListLength);
       var that = this;
       this.timer = d3.timer(function (elapsed) {
         that.rotate(elapsed);
       });
-    }
-  }, {
-    key: "createRightSide",
-    value: function createRightSide() {
-      this.rightSide = document.createElement('div');
-      this.rightSide.setAttribute("id", "right-side");
-      scoreSide = document.createElement("div");
-      scoreSide.setAttribute("id", "score");
-      scoreSide.innerHTML = "\u272C Your score : ".concat(this.score, " / ").concat(this.countryListLength);
-      this.rightSide.append(scoreSide);
-      this.root.append(this.rightSide);
     }
   }, {
     key: "startRotation",
