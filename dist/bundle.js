@@ -155,6 +155,7 @@ var Game = /*#__PURE__*/function () {
     setTimeout(function () {
       return _this.loadDataAndSelectCountry();
     }, 1000);
+    this.numTimesGuessed = 3;
   }
 
   _createClass(Game, [{
@@ -170,26 +171,30 @@ var Game = /*#__PURE__*/function () {
       d3.tsv(that.levelData, function (data1) {
         delete data1.columns;
         that.countryList = data1;
-
-        if (that.countryList) {
-          that.countryListLength = that.countryList.length;
-          that.countryIds = [];
-          Object.values(that.countryList).forEach(function (country) {
-            return that.countryIds.push(country.id);
-          });
-          var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
-          that.polygon = that.countriescoord.features.find(function (el) {
-            return el.id === randomId;
-          });
-          that.countrySelected = Object.values(that.countryList).find(function (el) {
-            return el.id === randomId;
-          });
-          console.log(that.countrySelected.name);
-        }
+        that.selectCountry();
       });
       setTimeout(function () {
         return that.drawEarthAndStartPlaying();
       }, 1000);
+    }
+  }, {
+    key: "selectCountry",
+    value: function selectCountry() {
+      var _this2 = this;
+
+      this.countryListLength = this.countryList.length;
+      this.countryIds = [];
+      Object.values(this.countryList).forEach(function (country) {
+        return _this2.countryIds.push(country.id);
+      });
+      var randomId = this.countryIds[Math.floor(Math.random() * this.countryIds.length)];
+      this.polygon = this.countriescoord.features.find(function (el) {
+        return el.id === randomId;
+      });
+      this.countrySelected = Object.values(this.countryList).find(function (el) {
+        return el.id === randomId;
+      });
+      console.log(this.countrySelected.name);
     }
   }, {
     key: "drawEarth",
@@ -264,22 +269,22 @@ var Game = /*#__PURE__*/function () {
       var questionTitle = document.createElement("h1");
       questionTitle.setAttribute("id", "question-title");
       questionTitle.innerHTML = "Guess the name of this country";
-      var input1 = document.createElement("input");
-      input1.setAttribute("id", "fill-country");
-      input1.setAttribute("type", "text");
-      input1.setAttribute("placeholder", "Your answer here");
-      var input2 = document.createElement("input");
-      input2.setAttribute("id", "enter");
-      input2.setAttribute("type", "submit");
-      input2.setAttribute("value", "Give it a try!");
+      this.input1 = document.createElement("input");
+      this.input1.setAttribute("id", "fill-country");
+      this.input1.setAttribute("type", "text");
+      this.input1.setAttribute("placeholder", "Your answer here");
+      this.input2 = document.createElement("input");
+      this.input2.setAttribute("id", "enter");
+      this.input2.setAttribute("type", "submit");
+      this.input2.setAttribute("value", "Give it a try!");
       this.form.append(questionTitle);
-      this.form.append(input1);
-      this.form.append(input2);
+      this.form.append(this.input1);
+      this.form.append(this.input2);
       this.rightSide.appendChild(this.form);
       var that = this;
       this.form.addEventListener("submit", function () {
         event.preventDefault();
-        var possibleAnswer = input1.value;
+        var possibleAnswer = that.input1.value;
         that.checkAnswer(possibleAnswer);
       });
     }
@@ -292,20 +297,52 @@ var Game = /*#__PURE__*/function () {
   }, {
     key: "tryAgain",
     value: function tryAgain() {
+      var _this3 = this;
+
       var h1 = document.createElement("h1");
       h1.setAttribute("id", "try-again");
-      h1.innerHTML = "Try again ...";
+      h1.innerHTML = "Try again ... You still have ".concat(this.numTimesGuessed, " guesse(s)");
+      this.form.append(h1);
+      this.input2.disabled = true;
+      this.input1.disabled = true;
+      setTimeout(function () {
+        h1.remove();
+        _this3.input1.disabled = false;
+        _this3.input2.disabled = false;
+      }, 1000);
+    }
+  }, {
+    key: "lastTryEncouragement",
+    value: function lastTryEncouragement() {
+      var _this4 = this;
+
+      var h1 = document.createElement("h1");
+      h1.setAttribute("id", "last-encouragement");
+      h1.innerHTML = "The country you were trying to guess is ".concat(this.countrySelected.name, ", remember it for next time!");
       this.form.append(h1);
       setTimeout(function () {
-        return h1.remove();
-      }, 3000);
+        _this4.form.remove();
+
+        _this4.selectCountry();
+
+        _this4.startRotation();
+      }, 5000);
     }
   }, {
     key: "checkAnswer",
     value: function checkAnswer(answer) {
       var that = this;
 
-      if (answer === this.countrySelected.name) {
+      if (this.numTimesGuessed !== 1 && answer !== this.countrySelected.name) {
+        this.numTimesGuessed -= 1;
+        this.tryAgain();
+      } else if (this.numTimesGuessed == 1) {
+        this.lastTryEncouragement();
+        this.numTimesGuessed = 3;
+      }
+
+      if (answer == this.countrySelected.name) {
+        this.numTimesGuessed = 3;
         var audio = new Audio('kids.wav');
         audio.play();
         that.score++;
@@ -327,8 +364,6 @@ var Game = /*#__PURE__*/function () {
         });
         console.log(that.countrySelected.name);
         this.startRotation();
-      } else {
-        this.tryAgain();
       }
     }
   }, {

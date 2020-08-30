@@ -48,7 +48,7 @@ class Game {
         })
         setTimeout(() => this.loadDataAndSelectCountry(), 1000)
 
-        
+        this.numTimesGuessed = 3
         
      
     }
@@ -62,17 +62,19 @@ class Game {
             d3.tsv(that.levelData, function(data1){
             delete data1.columns
             that.countryList = data1
-            if (that.countryList){
-                that.countryListLength = that.countryList.length
-                that.countryIds = [];
-                Object.values(that.countryList).forEach(country => that.countryIds.push(country.id))
-                var randomId = that.countryIds[Math.floor(Math.random() * that.countryIds.length)];
-                that.polygon = that.countriescoord.features.find(function (el) { return el.id === randomId }) 
-                that.countrySelected = Object.values(that.countryList).find(function (el){return el.id === randomId})
-                console.log(that.countrySelected.name)
-            }
+            that.selectCountry()
         })
         setTimeout(() => that.drawEarthAndStartPlaying(), 1000)
+    }
+
+    selectCountry(){
+        this.countryListLength = this.countryList.length
+        this.countryIds = [];
+        Object.values(this.countryList).forEach(country => this.countryIds.push(country.id))
+        var randomId = this.countryIds[Math.floor(Math.random() * this.countryIds.length)];
+        this.polygon = this.countriescoord.features.find(function (el) { return el.id === randomId }) 
+        this.countrySelected = Object.values(this.countryList).find(function (el){return el.id === randomId})
+        console.log(this.countrySelected.name)
     }
 
 
@@ -146,28 +148,27 @@ class Game {
     
     
     showQuestion(){
-        
         this.form = document.createElement("form")
         this.form.setAttribute("id", "form-question")
         const questionTitle= document.createElement("h1")
         questionTitle.setAttribute("id", "question-title")
         questionTitle.innerHTML = "Guess the name of this country"
-        const input1 = document.createElement("input")
-        input1.setAttribute("id", "fill-country")
-        input1.setAttribute("type", "text")
-        input1.setAttribute("placeholder", "Your answer here")
-        const input2 = document.createElement("input")
-        input2.setAttribute("id", "enter")
-        input2.setAttribute("type", "submit")
-        input2.setAttribute("value", "Give it a try!")
+        this.input1 = document.createElement("input")
+        this.input1.setAttribute("id", "fill-country")
+        this.input1.setAttribute("type", "text")
+        this.input1.setAttribute("placeholder", "Your answer here")
+        this.input2 = document.createElement("input")
+        this.input2.setAttribute("id", "enter")
+        this.input2.setAttribute("type", "submit")
+        this.input2.setAttribute("value", "Give it a try!")
         this.form.append(questionTitle)
-        this.form.append(input1)
-        this.form.append(input2)
+        this.form.append(this.input1)
+        this.form.append(this.input2)
         this.rightSide.appendChild(this.form)
         let that = this
         this.form.addEventListener("submit", () =>{
             event.preventDefault()
-            const possibleAnswer = input1.value
+            const possibleAnswer = that.input1.value
             that.checkAnswer(possibleAnswer)
         })
     };
@@ -177,10 +178,6 @@ class Game {
 
     
     
-    
-
-    
-
 
     closeQuestion(){
         const question = document.getElementsByClassName('question-shown')[0];
@@ -193,15 +190,41 @@ class Game {
   tryAgain(){
       const h1 = document.createElement("h1")
       h1.setAttribute("id", "try-again")
-      h1.innerHTML = "Try again ..."
+      h1.innerHTML = `Try again ... You still have ${this.numTimesGuessed} guesse(s)`
       this.form.append(h1)
-      setTimeout(()=> h1.remove(), 3000)
+      this.input2.disabled = true 
+      this.input1.disabled = true 
+      setTimeout(()=> {
+          h1.remove()
+          this.input1.disabled = false
+          this.input2.disabled = false}
+          , 1000)
   }
 
+  lastTryEncouragement(){
+      const h1 = document.createElement("h1")
+      h1.setAttribute("id", "last-encouragement")
+      h1.innerHTML = `The country you were trying to guess is ${this.countrySelected.name}, remember it for next time!`
+      this.form.append(h1)
+      setTimeout(() => {
+          this.form.remove()
+          this.selectCountry()
+          this.startRotation()
+      }, 5000)
+  }
 
     checkAnswer(answer){
         let that = this
-        if (answer === this.countrySelected.name){
+        
+        if (this.numTimesGuessed !== 1 && answer !== this.countrySelected.name){
+                this.numTimesGuessed -= 1
+                this.tryAgain()
+            }else if(this.numTimesGuessed == 1){
+                this.lastTryEncouragement()
+                this.numTimesGuessed = 3
+            }
+        if (answer == this.countrySelected.name){
+            this.numTimesGuessed = 3
             var audio = new Audio('kids.wav');
             audio.play();
             that.score ++ 
@@ -215,10 +238,8 @@ class Game {
             that.polygon = that.countriescoord.features.find(function (el) { return el.id === that.randomId }) 
             that.countrySelected = Object.values(that.countryList).find(function (el) { return el.id === that.randomId })
             console.log(that.countrySelected.name)
-            this.startRotation()
-        }else {
-            this.tryAgain()
-        }
+            this.startRotation()}
+        
     }
 
     

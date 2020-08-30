@@ -80,11 +80,16 @@
           }
           
        
-          
           #try-again{
             font-size: 18px;
-            margin-left: 21vw;
+            margin-left: 13vw;
             margin-top: 4vh;
+          }
+
+          #last-encouragement{
+            text-align: center;
+            margin: 8vh 4vw 0vh 8vw;
+            line-height: 3vh;
           }
     
 }
