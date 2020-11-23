@@ -124,6 +124,8 @@ input[type="submit"] {
     flex-direction: row;
     line-height: 10vh;
     margin-left: 30vw; }
+    #right-side #score #star {
+      padding-right: 1vw; }
   #right-side #form-question {
     height: 70vh;
     display: flex;

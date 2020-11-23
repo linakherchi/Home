@@ -99,6 +99,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+// const Fireworks = require("./../fireworks.js/script/fireworks")
 var Form = /*#__PURE__*/function () {
   function Form() {
     _classCallCheck(this, Form);
@@ -113,7 +114,13 @@ var Form = /*#__PURE__*/function () {
       this.rightSide.setAttribute("id", "right-side");
       scoreSide = document.createElement("div");
       scoreSide.setAttribute("id", "score");
-      scoreSide.innerHTML = "".concat(this.star, " Your score : ").concat(score, " / ").concat(totalPoints);
+      this.pStar = document.createElement("p");
+      this.pStar.innerHTML = this.star;
+      this.pStar.setAttribute("id", "star");
+      this.pScore = document.createElement("p");
+      this.pScore.innerHTML = "Your score : ".concat(score, " / ").concat(totalPoints);
+      scoreSide.append(this.pStar);
+      scoreSide.append(this.pScore);
       this.rightSide.append(scoreSide);
       root.append(this.rightSide);
     }
@@ -174,8 +181,19 @@ var Form = /*#__PURE__*/function () {
   }, {
     key: "updateScore",
     value: function updateScore(newScore, totalPoints) {
+      var _this2 = this;
+
       this.score = document.getElementById('score');
-      this.score.innerHTML = "".concat(this.star, " Your score : ").concat(newScore, " / ").concat(totalPoints);
+      this.pScore.innerHTML = "Your score : ".concat(newScore, " / ").concat(totalPoints);
+      this.pStar.style.fontSize = "20px";
+      setTimeout(function () {
+        return _this2.pStar.style.fontSize = "";
+      }, 200);
+    }
+  }, {
+    key: "levelWon",
+    value: function levelWon() {
+      createFirework(76, 184, 7, 4, null, null, null, null, false, true);
     }
   }]);
 
@@ -238,8 +256,10 @@ var Game = /*#__PURE__*/function () {
       type: 'Sphere'
     };
     this.graticule = d3.geoGraticule10();
-    this.colorWater = '#fff';
-    this.colorLand = '#111';
+    this.colorWater = '#fff'; // this.colorWater = '#0066cc'
+
+    this.colorLand = '#111'; // this.colorLand = '#9D5F38'
+
     this.colorGraticule = '#ccc';
     this.path = d3.geoPath(this.projection).context(this.context);
     this.scaleFactor = 0.9;
@@ -417,6 +437,11 @@ var Game = /*#__PURE__*/function () {
 
         audio.play();
         this.score += 1;
+
+        if (this.score == this.countryListLength) {
+          this.instanceOfForm.levelWon();
+        }
+
         this.instanceOfForm.updateScore(this.score, this.countryListLength);
         this.form.remove();
         that.countryIds = that.countryIds.filter(function (el) {
@@ -503,6 +528,7 @@ var Levels = /*#__PURE__*/function () {
   function Levels() {
     _classCallCheck(this, Levels);
 
+    // debugger
     this.render();
   }
 
@@ -512,8 +538,8 @@ var Levels = /*#__PURE__*/function () {
       // debugger
       var extremeLevel = 'https://gist.githubusercontent.com/linakherchi/279a80d6c30bd28654b3570554e03140/raw/2d898cf90669f915047c1c4a7f7d3fd88dc2fda5/Extreme';
       var hardLevel = 'https://gist.githubusercontent.com/linakherchi/c22e6dbf6bdc0ecd4d927b0b8833057d/raw/d352de2211c3866f21c094b66694af27f1dee45b/Hard';
-      var mediumLevel = 'https://gist.githubusercontent.com/linakherchi/bb8cc8413204178dc7fd6300bc4bb806/raw/06ca7a9d901b72516ec2862761fc363a6627c4f1/Medium';
-      var easyLevel = 'https://gist.githubusercontent.com/linakherchi/0545583fbff6cb3a5beea4a82c6788f0/raw/234af1e606561222c652072a1ac087e396eb0fc6/Easy';
+      var mediumLevel = 'https://gist.githubusercontent.com/linakherchi/bb8cc8413204178dc7fd6300bc4bb806/raw/ee122907cea29433c4551d0a112855a417ede279/Medium';
+      var easyLevel = 'https://gist.githubusercontent.com/linakherchi/0545583fbff6cb3a5beea4a82c6788f0/raw/8970dccebe4b5f9736d0bb37b52f3636642d3e1c/Easy';
       var div = document.createElement("div");
       div.setAttribute("id", "main-menu");
       var menuButtons = ["Easy", "Medium", "Hard", "Extreme", "How To Play"];
@@ -524,7 +550,8 @@ var Levels = /*#__PURE__*/function () {
 
         if (button !== "How To Play") {
           buttonElement.addEventListener("click", function () {
-            var downcaseLevel = button.toLowerCase();
+            var downcaseLevel = button.toLowerCase(); // debugger
+
             new Game(button, eval(downcaseLevel + "Level"));
           });
         }

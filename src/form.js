@@ -1,3 +1,6 @@
+
+// const Fireworks = require("./../fireworks.js/script/fireworks")
+
 class Form{
     constructor(){
         this.star = '✬'
@@ -8,7 +11,13 @@ class Form{
         this.rightSide.setAttribute("id", "right-side")
         scoreSide = document.createElement("div")
         scoreSide.setAttribute("id", "score")
-        scoreSide.innerHTML = `${this.star} Your score : ${score} / ${totalPoints}`
+        this.pStar = document.createElement("p")
+        this.pStar.innerHTML = this.star
+        this.pStar.setAttribute("id", "star")
+        this.pScore = document.createElement("p")
+        this.pScore.innerHTML = `Your score : ${score} / ${totalPoints}`
+        scoreSide.append(this.pStar)
+        scoreSide.append(this.pScore)
         this.rightSide.append(scoreSide)
         root.append(this.rightSide)
     }
@@ -63,7 +72,13 @@ class Form{
 
     updateScore(newScore, totalPoints){
         this.score = document.getElementById('score')
-        this.score.innerHTML = `${this.star} Your score : ${newScore} / ${totalPoints}`
+        this.pScore.innerHTML = `Your score : ${newScore} / ${totalPoints}`
+        this.pStar.style.fontSize = "20px"
+        setTimeout(() => this.pStar.style.fontSize = "", 200)
+    }
+
+    levelWon(){
+        createFirework(76,184,7,4,null,null,null,null,false,true)
     }
 }
 

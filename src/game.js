@@ -28,7 +28,9 @@ class Game {
         this.water = { type: 'Sphere' }
         this.graticule = d3.geoGraticule10()
         this.colorWater = '#fff'
+        // this.colorWater = '#0066cc'
         this.colorLand = '#111'
+        // this.colorLand = '#9D5F38'
         this.colorGraticule = '#ccc'
         this.path = d3.geoPath(this.projection).context(this.context)
         this.scaleFactor = 0.9
@@ -198,6 +200,9 @@ class Game {
             }
             audio.play();
             this.score += 1
+            if (this.score == this.countryListLength){
+                this.instanceOfForm.levelWon()
+            }
             this.instanceOfForm.updateScore(this.score, this.countryListLength)
             this.form.remove()
           
