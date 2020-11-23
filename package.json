@@ -17,7 +17,7 @@
   "bugs": {
     "url": "https://github.com/linakherchi/Home/issues"
   },
-  "homepage": "https://github.com/linakherchi/Home#readme",
+  "homepage": "https://github.com/linakherchi/Home",
   "dependencies": {
     "@babel/cli": "^7.10.4",
     "@babel/core": "^7.10.4",
