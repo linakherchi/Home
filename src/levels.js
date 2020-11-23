@@ -15,7 +15,8 @@ class Levels{
         const easyLevel = 'https://gist.githubusercontent.com/linakherchi/0545583fbff6cb3a5beea4a82c6788f0/raw/8970dccebe4b5f9736d0bb37b52f3636642d3e1c/Easy'
         const div = document.createElement("div")
         div.setAttribute("id","main-menu")
-        const menuButtons = ["Easy", "Medium", "Hard", "Extreme", "How To Play"]
+        // const menuButtons = ["Easy", "Medium", "Hard", "Extreme", "How To Play"]
+        const menuButtons = ["Easy", "Medium", "Hard", "Extreme"]
         menuButtons.forEach((button) => {
             const buttonElement = document.createElement("button")
             buttonElement.setAttribute("id", "menu-button")

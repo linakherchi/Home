@@ -541,8 +541,9 @@ var Levels = /*#__PURE__*/function () {
       var mediumLevel = 'https://gist.githubusercontent.com/linakherchi/bb8cc8413204178dc7fd6300bc4bb806/raw/ee122907cea29433c4551d0a112855a417ede279/Medium';
       var easyLevel = 'https://gist.githubusercontent.com/linakherchi/0545583fbff6cb3a5beea4a82c6788f0/raw/8970dccebe4b5f9736d0bb37b52f3636642d3e1c/Easy';
       var div = document.createElement("div");
-      div.setAttribute("id", "main-menu");
-      var menuButtons = ["Easy", "Medium", "Hard", "Extreme", "How To Play"];
+      div.setAttribute("id", "main-menu"); // const menuButtons = ["Easy", "Medium", "Hard", "Extreme", "How To Play"]
+
+      var menuButtons = ["Easy", "Medium", "Hard", "Extreme"];
       menuButtons.forEach(function (button) {
         var buttonElement = document.createElement("button");
         buttonElement.setAttribute("id", "menu-button");
